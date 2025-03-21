@@ -50,7 +50,7 @@ SELECT
 	, g.CapitalCity
 	, fx.CountryCode AS FxCountryCode
 	, fx.CurrencyCode
-FROM Geography g RIGHT JOIN CurrencyFX fx ON fx.CountryCode = g.CountryCode;
+FROM CurrencyFX fx LEFT JOIN Geography g  ON fx.CountryCode = g.CountryCode;
 
 /*
 <Table B> RIGHT JOIN <Table A> gives same results  as <Table A> LEFT JOIN <Table B>
@@ -141,7 +141,7 @@ SELECT
 	CountryCode
 FROM
 	Geography g
-UNION
+UNION ALL
 SELECT
 	CountryCode
 FROM

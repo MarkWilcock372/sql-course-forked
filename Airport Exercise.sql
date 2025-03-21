@@ -32,13 +32,22 @@ SELECT TOP 10
 FROM airports a;
 
 -- How many airports are in the airports table?
+SELECT count(*) FROM airports
 
 -- How many frequencies are in the airport_frequencies table?
+SELECT count(*) FROM airport_frequencies
 
 -- How many airports of each type?
+SELECT
+	a.[Type]
+	, count(*) As NumAirports
+FROM
+	airports a
+GROUP BY a.[type]
 
 -- Is the airport.ident column unique? i.e. there are no duplicate values
 
+SELECT 	a FROM 	airports a;
 /*
 Do a data quality check on the airports_frequencies table
 Are there any orphan rows (frequencies without a matching airports)?
@@ -46,9 +55,36 @@ You can do this is several ways: LEFT JOIN, NOT IN, NOT EXISTS,...
 */
 -- left join approach
 
--- NOT EXISTS approach	
+SELECT
+	COUNT(*) AS NumberOfOrphanRows
+FROM
+	airport_frequencies af
+LEFT JOIN
+	airports a
+ON  af.airport_ident = a.ident
+WHERE
+	a.ident IS NULL;
 
+-- NOT EXISTS approach	
+SELECT count(*) FROM airport_frequencies af
+WHERE
+	NOT EXISTS (
+	SELECT
+		*
+	FROM
+		airports a
+	WHERE
+		a.ident = af.airport_ident);
+		
 -- NOT IN approach	
+SELECT count(*) FROM airport_frequencies af
+WHERE af.airport_ident NOT IN (
+SELECT
+	ident
+FROM
+	airports)
+
+
 
 /*
 1. List airports.  Show the following columns: ident, iata_code, name, latitude_deg, longitude_deg 
