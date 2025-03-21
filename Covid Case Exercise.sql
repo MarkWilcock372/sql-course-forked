@@ -22,7 +22,7 @@ SELECT
 	cc.Country
 	, cc.DateRecorded
 	, cc.DailyCases
-	, 'your answer' AS CumulativeCases
+	, SUM(CC.DailyCases) over (partition by cc.Country  order by cc.DateRecorded) AS CumulativeCases
 FROM
 	CovidCase cc
 where cc.DateRecorded <= '2020-03-15' -- keep # rows returned manageable to avoid scrolling much
@@ -58,7 +58,7 @@ ORDER BY
 Find the three days with the highest number of cases in the UK
 Create a resultset with three columns: DateRecorded, DailyCases and Ranking, and with three rows
 */
-
+;
 WITH
     uk (DateRecorded, DailyCases)
     AS
@@ -71,12 +71,13 @@ FROM
 GROUP BY
 	cc.DateRecorded
     )
-SELECT 
+SELECT top 3
 	uk.DateRecorded
 	, uk.DailyCases
-	, 'your answer' AS Ranking
+	, RANK() OVER (ORDER BY uk.DailyCases DESC) AS Ranking
 FROM
-	uk;
+	uk
+order by Ranking 
 
 /*
 Find the three days with the highest number of cases in each country 
@@ -84,7 +85,8 @@ Create a resultset with
 * four columns: Country, DateRecorded, DailyCases and Ranking 
 * 12 rows (4 rows for each country with Ranking of 1,2,and 3
 */
-WITH
+
+;WITH
     cte
     AS
     (
@@ -152,3 +154,6 @@ FROM
 ORDER BY
 	cc.Country
 	, cc.DateRecorded;
+
+
+SELECT * FROM Tally	

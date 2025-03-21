@@ -7,7 +7,7 @@ For example, tally tables can easily generate a sequence of dates, numbers, or t
 */
 
 -- Many databases, including the course database, may already have a tally table you can use.
-SELECT * FROM Tally WHERE N < 10;
+SELECT top 10 * FROM Tally  order by Tally.N DESC;
 
 /*
 Exercise: write a SQL statement to find out how many rows are in this table.  Are the values contiguous?
@@ -35,6 +35,7 @@ DECLARE @EndDate DATE;
 SELECT @StartDate = DATEFROMPARTS(2024, 1, 1);
 SELECT  @EndDate = DATEFROMPARTS(2024, 12, 31);
 DECLARE @NumberOfDays INT = DATEDIFF(DAY, @StartDate, @EndDate) + 1;
+select @NumberOfDays
 SELECT 
 	DATEADD(DAY, N-1, @StartDate) AS Date
 FROM 
@@ -53,10 +54,10 @@ ORDER BY Date
 -- A UNION stacks one table on another (like a VSTACK in Excel)
 SELECT
 	'A' AS MyColumn
-UNION
+UNION ALL
 SELECT
-	'B'
-UNION
+	'A'
+UNION ALL
 SELECT
 	'C';
 
@@ -116,3 +117,16 @@ WHERE
 	N <= 1000
 ORDER BY
 	N;
+
+
+WITH E1(N) AS (
+	    SELECT 1 UNION ALL SELECT 1 UNION ALL SELECT 1 UNION ALL SELECT 1 UNION ALL SELECT 1
+	    UNION ALL SELECT 1 UNION ALL SELECT 1 UNION ALL SELECT 1 UNION ALL SELECT 1 UNION ALL SELECT 1
+	)
+	, E2(N) AS ( SELECT 1 FROM E1 a CROSS JOIN E1 b)
+	, E4(N) AS ( SELECT 1 FROM E2 a CROSS JOIN E2 b)
+SELECT ROW_NUMBER() over (order by N) AS mYnUMBER
+INTO #tally
+FROM E4
+
+select * from #tally
